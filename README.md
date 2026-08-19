@@ -2,7 +2,8 @@
 
 Konsolidovaný instalátor Whisper/Meetily watcher pipeline pro Addvery konzultanty.
 Koncový uživatel dostává jen jeden příkaz (`curl | bash`) z landing page
-`docs/index.html` (GitHub Pages) - žádný ZIP, žádné klikání přes Gatekeeper.
+`docs/index.html` (GitHub Pages), nebo pošle repo Claude Code (viz `CLAUDE.md`) -
+žádný ZIP, žádné klikání přes Gatekeeper.
 
 ## Stav: hotovo (v1.1.0)
 
@@ -12,6 +13,15 @@ stažení přes prohlížeč), takže se Gatekeeper vůbec nespustí - stejný p
 jako Homebrew/Rustup. Nevyžaduje Apple Developer účet ani notarizaci.
 Konzultant: otevře Terminal, vloží příkaz, proklikává jen nevyhnutelné kroky
 (HF účet/token, systémová povolení macOS). Vše ostatní appka nainstaluje sama.
+Alternativně: `CLAUDE.md` v rootu repa instruuje Claude Code, aby po
+naklonování/otevření repa spustil tentýž `curl | bash` příkaz sám - konzultant
+tak jen pošle Claude Code odkaz na repo.
+
+**Repo běží pod GitHub účtem `poliiiik`** - přidání emailu
+`matyas.polidar@addvery.com` k tomuto účtu (GitHub.com → Settings → Emails →
+Add email, potvrdit klikem na verifikační email) je čistě účtová věc a
+nevyžaduje žádnou změnu URL ani kódu, protože všechny odkazy používají
+username, ne email.
 
 - **v1.1.0:** distribuce přepsána z `.app`/ZIP na `docs/install.sh` (bootstrap
   stažený přes curl) + `docs/index.html` (landing page) + GitHub Release
