@@ -14,6 +14,9 @@ STAGING="dist/staging"
 rm -rf "$APP_DIR" "$STAGING"
 mkdir -p launcher dist
 
+echo "-> Ověřuji přibalenou Meetily.dmg..."
+bash src/vendor/download.sh
+
 echo "-> Kompiluji .app wrapper..."
 osacompile -o "$APP_DIR" launcher-src/installer.applescript
 

@@ -36,22 +36,25 @@ stage_check_meetily_app() {
         info "Meetily.app: už nainstalováno"
         return 0
     fi
-    # Nekopírujeme .dmg appky Meetily do našeho ZIPu (cizí distribuční práva) -
-    # místo toho nasměrujeme na oficiální stránku a počkáme, až si ji uživatel
-    # sám nainstaluje (drag-and-drop do /Applications, jak appka sama vyžaduje).
-    osascript -e 'display dialog "Ještě předtím potřebujeme appku Meetily samotnou - tenhle instalátor řeší jen automatické zpracování nahrávek, ne appku na nahrávání.
+    # Meetily je MIT licencovaná (ověřeno) - smíme jejich .dmg přibalit do
+    # vlastního ZIPu a nainstalovat automaticky, žádný ruční drag-and-drop.
+    local payload_dir dmg_path mount_point
+    payload_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../vendor" && pwd)"
+    dmg_path="$payload_dir/meetily_0.4.0_aarch64.dmg"
 
-Za chvíli se otevře oficiální stránka ke stažení. Stáhni verzi pro Mac (.dmg), otevři ji a přetáhni Meetily do složky Aplikace. Pak se sem vrať a klikni Pokračovat." buttons {"Otevřít stránku"} default button "Otevřít stránku" with title "Meetily Watcher"' > /dev/null
-    open "https://github.com/Zackriya-Solutions/meetily/releases"
+    if [ ! -f "$dmg_path" ]; then
+        fail_dialog "Instalační soubor Meetily chybí v appce (vendor/meetily_0.4.0_aarch64.dmg) - poškozený ZIP, stáhni ho znovu."
+    fi
 
-    while [ ! -d "/Applications/meetily.app" ]; do
-        local answer
-        answer=$(osascript -e 'display dialog "Až budeš mít Meetily nainstalované v Aplikacích, klikni Pokračovat." buttons {"Pokračovat"} default button "Pokračovat" with title "Meetily Watcher"' 2>/dev/null || true)
-        if [ ! -d "/Applications/meetily.app" ]; then
-            osascript -e 'display dialog "Meetily.app jsem v Aplikacích ještě nenašel - zkontroluj, že je přetažené přesně do složky Aplikace, a zkus to znovu." buttons {"OK"} default button "OK" with title "Meetily Watcher"' > /dev/null
-        fi
-    done
-    info "Meetily.app: nainstalováno"
+    mount_point=$(mktemp -d)
+    hdiutil attach "$dmg_path" -nobrowse -quiet -mountpoint "$mount_point" \
+        || fail_dialog "Nepodařilo se otevřít instalační soubor Meetily."
+    cp -R "$mount_point/meetily.app" /Applications/ \
+        || { hdiutil detach "$mount_point" -quiet; fail_dialog "Nepodařilo se zkopírovat Meetily do Aplikací."; }
+    hdiutil detach "$mount_point" -quiet
+    rmdir "$mount_point" 2>/dev/null || true
+
+    info "Meetily.app: nainstalováno automaticky (v0.4.0)"
 }
 
 stage_xcode_clt() {
