@@ -134,6 +134,7 @@ stage_write_launch_prompt_plist() {
 }
 
 stage_verify() {
+    sleep 1  # launchctl list se krátce po `launchctl load` ještě nemusí stihnout aktualizovat
     local ok=1
     "$MLX_VENV/bin/python3" -c "import mlx_whisper" &>/dev/null || { warn "mlx_whisper se nedá importovat"; ok=0; }
     "$WHISPERX_VENV/bin/python3" -c "import whisperx" &>/dev/null || { warn "whisperx se nedá importovat"; ok=0; }
