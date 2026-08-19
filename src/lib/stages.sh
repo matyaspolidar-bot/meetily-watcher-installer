@@ -8,6 +8,8 @@ MLX_VENV="$WHISPER_SETUP_DIR/mlx-env"
 WHISPERX_VENV="$WHISPER_SETUP_DIR/whisperx-env"
 PLIST_TARGET="$HOME/Library/LaunchAgents/com.addvery.meetily-watcher.plist"
 LAUNCHD_LABEL="com.addvery.meetily-watcher"
+PROMPT_PLIST_TARGET="$HOME/Library/LaunchAgents/com.addvery.meetily-launch-prompt.plist"
+PROMPT_LAUNCHD_LABEL="com.addvery.meetily-launch-prompt"
 
 check_admin_rights() {
     # Homebrew/Xcode CLT instalace vyžadují admin práva. Ověřit HNED na začátku,
@@ -93,7 +95,7 @@ stage_venv_whisperx() {
 }
 
 stage_copy_payload_scripts() {
-    # KLÍČOVÁ OPRAVA: všech pět souborů se kopíruje najednou, ne postupně ručně.
+    # KLÍČOVÁ OPRAVA: všechny soubory se kopírují najednou, ne postupně ručně.
     local payload_dir
     payload_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../payload" && pwd)"
     mkdir -p "$WHISPER_SETUP_DIR"
@@ -102,10 +104,12 @@ stage_copy_payload_scripts() {
        "$payload_dir/export_transcript.py" \
        "$payload_dir/apply_speaker_names.py" \
        "$payload_dir/transcribe_meeting.sh" \
+       "$payload_dir/click_meetily_record.applescript" \
+       "$payload_dir/meetily_launch_prompt.py" \
        "$WHISPER_SETUP_DIR/" \
         || fail_dialog "Kopírování skriptů selhalo."
     chmod +x "$WHISPER_SETUP_DIR/transcribe_meeting.sh"
-    info "Watcher skripty: zkopírováno (5/5)"
+    info "Watcher skripty: zkopírováno"
 }
 
 stage_write_plist() {
@@ -118,10 +122,22 @@ stage_write_plist() {
     info "launchd watcher: nainstalováno a spuštěno"
 }
 
+stage_write_launch_prompt_plist() {
+    local payload_dir
+    payload_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../payload" && pwd)"
+    sed "s|__HOME__|$HOME|g" "$payload_dir/com.addvery.meetily-launch-prompt.plist.template" > "$PROMPT_PLIST_TARGET" \
+        || fail_dialog "Zápis plistu pro dialog při zapnutí Meetily selhal."
+    launchctl unload "$PROMPT_PLIST_TARGET" &>/dev/null || true
+    launchctl load "$PROMPT_PLIST_TARGET" || fail_dialog "Načtení launchd úlohy pro dialog při zapnutí selhalo."
+    info "Dialog 'Chcete začít nahrávat?': nainstalováno a spuštěno"
+    warn "Potřebuje jednorázově povolit Přístupnost (Accessibility) pro System Events/osascript v Nastavení > Soukromí a zabezpečení."
+}
+
 stage_verify() {
     local ok=1
     "$MLX_VENV/bin/python3" -c "import mlx_whisper" &>/dev/null || { warn "mlx_whisper se nedá importovat"; ok=0; }
     "$WHISPERX_VENV/bin/python3" -c "import whisperx" &>/dev/null || { warn "whisperx se nedá importovat"; ok=0; }
-    launchctl list | grep -q "$LAUNCHD_LABEL" || { warn "launchd úloha neběží"; ok=0; }
+    launchctl list | grep -q "$LAUNCHD_LABEL" || { warn "launchd úloha (watcher) neběží"; ok=0; }
+    launchctl list | grep -q "$PROMPT_LAUNCHD_LABEL" || { warn "launchd úloha (dialog při zapnutí) neběží"; ok=0; }
     [ "$ok" -eq 1 ]
 }

@@ -38,6 +38,7 @@ stage_download_models
 
 stage_copy_payload_scripts
 stage_write_plist
+stage_write_launch_prompt_plist
 
 if stage_verify; then
     success_dialog "Hotovo! Meetily Watcher je nainstalovaný a běží na pozadí."
