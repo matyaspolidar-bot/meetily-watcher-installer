@@ -4,7 +4,7 @@
 # takže Gatekeeper se vůbec nespustí - žádné "Open Anyway" klikání.
 set -euo pipefail
 
-RELEASE_URL="https://github.com/poliiiik/meetily-watcher-installer/releases/latest/download/meetily-watcher-payload.tar.gz"
+RELEASE_URL="https://github.com/matyaspolidar-bot/meetily-watcher-installer/releases/latest/download/meetily-watcher-payload.tar.gz"
 
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT

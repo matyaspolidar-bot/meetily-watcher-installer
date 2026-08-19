@@ -17,7 +17,7 @@ Alternativně: `CLAUDE.md` v rootu repa instruuje Claude Code, aby po
 naklonování/otevření repa spustil tentýž `curl | bash` příkaz sám - konzultant
 tak jen pošle Claude Code odkaz na repo.
 
-**Repo běží pod GitHub účtem `poliiiik`** - přidání emailu
+**Repo běží pod GitHub účtem `matyaspolidar-bot`** - přidání emailu
 `matyas.polidar@addvery.com` k tomuto účtu (GitHub.com → Settings → Emails →
 Add email, potvrdit klikem na verifikační email) je čistě účtová věc a
 nevyžaduje žádnou změnu URL ani kódu, protože všechny odkazy používají

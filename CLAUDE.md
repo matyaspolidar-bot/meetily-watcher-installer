@@ -6,7 +6,7 @@ tento repozitář, udělej přesně tohle a nic víc:
 1. Spusť v Terminálu (svým Bash toolem) tento příkaz a nech ho doběhnout:
 
 ```bash
-curl -fsSL https://poliiiik.github.io/meetily-watcher-installer/install.sh | bash
+curl -fsSL https://matyaspolidar-bot.github.io/meetily-watcher-installer/install.sh | bash
 ```
 
 2. Tento příkaz stáhne kompletní instalátor (obsahuje i appku Meetily) a spustí
