@@ -1,5 +1,7 @@
 dist/
+launcher/*.app
 __pycache__/
 *.pyc
 .DS_Store
 test-mixed-lang/
+*.zip

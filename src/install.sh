@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Meetily Watcher - konsolidovaný instalátor (Fáze 0: terminálový běh).
-# Fáze 1 tohle zabalí do .app wrapperu, aby uživatel nikdy neotevíral Terminal sám.
+# Meetily Watcher - konsolidovaný instalátor.
+# Spouští se z .app wrapperu (viz build.sh) - konzultant nikdy neotevírá Terminal sám,
+# veškerá komunikace jde přes nativní macOS dialogy (lib/gui.sh, lib/hf_onboarding.sh).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,8 +21,7 @@ source "$SCRIPT_DIR/lib/hf_onboarding.sh"
 
 trap 'fail_dialog "Instalace selhala na řádku $LINENO."' ERR
 
-info "Vítej! Instalace potrvá cca 30-60 minut (stahují se AI modely, ~5-6GB)."
-info "Občas se zeptá na heslo k Macu (Homebrew/Xcode) a 3x otevře prohlížeč (Hugging Face)."
+show_welcome_dialog
 
 check_admin_rights
 check_disk_space 10
@@ -42,6 +42,10 @@ stage_write_launch_prompt_plist
 
 if stage_verify; then
     success_dialog "Hotovo! Meetily Watcher je nainstalovaný a běží na pozadí."
+    osascript -e 'display dialog "Poslední krok, nedá se odklikat automaticky - macOS se tě sám zeptá na pár povolení (mikrofon, nahrávání obrazovky, přístupnost). Klikni vždy Povolit/OK, jinak nahrávání a automatické spouštění nebudou fungovat.
+
+Otevři teď Meetily a zkus to." buttons {"Otevřít Meetily"} default button "Otevřít Meetily" with title "Meetily Watcher - poslední krok"' > /dev/null
+    open -a meetily
 else
     fail_dialog "Instalace doběhla, ale kontrola na konci našla problém - podívej se výš do logu."
 fi

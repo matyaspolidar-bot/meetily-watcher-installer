@@ -133,12 +133,27 @@ stage_write_launch_prompt_plist() {
     warn "Potřebuje jednorázově povolit Přístupnost (Accessibility) pro System Events/osascript v Nastavení > Soukromí a zabezpečení."
 }
 
+wait_for_process() {
+    # pgrep místo `launchctl list` - když install.sh běží přes "do shell script"
+    # (appka na dvojklik), je ve zvláštním bootstrap kontextu, kde launchctl list
+    # nemusí vidět GUI LaunchAgenty, i když reálně běží. pgrep hledá napříč celým
+    # systémem a na tom kontextu nezávisí.
+    local pattern="$1"
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+        pgrep -f "$pattern" &>/dev/null && return 0
+        sleep 1
+    done
+    return 1
+}
+
 stage_verify() {
-    sleep 1  # launchctl list se krátce po `launchctl load` ještě nemusí stihnout aktualizovat
     local ok=1
     "$MLX_VENV/bin/python3" -c "import mlx_whisper" &>/dev/null || { warn "mlx_whisper se nedá importovat"; ok=0; }
     "$WHISPERX_VENV/bin/python3" -c "import whisperx" &>/dev/null || { warn "whisperx se nedá importovat"; ok=0; }
-    launchctl list | grep -q "$LAUNCHD_LABEL" || { warn "launchd úloha (watcher) neběží"; ok=0; }
-    launchctl list | grep -q "$PROMPT_LAUNCHD_LABEL" || { warn "launchd úloha (dialog při zapnutí) neběží"; ok=0; }
+    # meetily-watcher běží jen jednou za 120s (StartInterval, ne KeepAlive) - pgrep by ho
+    # mohl chytit i minout podle náhody. Kontrolujeme radši, že je plist na místě a validní.
+    plutil -lint "$PLIST_TARGET" &>/dev/null || { warn "plist watcheru není validní"; ok=0; }
+    # meetily-launch-prompt běží nepřetržitě (KeepAlive) - pgrep ho spolehlivě najde.
+    wait_for_process "meetily_launch_prompt.py" || { warn "hlídač dialogu při zapnutí neběží"; ok=0; }
     [ "$ok" -eq 1 ]
 }

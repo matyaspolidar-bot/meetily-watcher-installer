@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Fáze 0: terminálová verze (read -p). Fáze 2 nahradí prompty za osascript dialogy
-# a otevírání tabů udělá sekvenčně s blokujícím dialogem mezi nimi - rozhraní
-# stage_hf_onboarding() se nemění, jen jeho vnitřek.
+# Fáze 1: dialogy místo read -p - appka na dvojklik nemá Terminal, kam by se dalo psát.
 
 HF_GATED_MODELS=(
     "pyannote/speaker-diarization-3.1"
@@ -9,27 +7,37 @@ HF_GATED_MODELS=(
     "pyannote/speaker-diarization-community-1"
 )
 
+ok_dialog() {
+    osascript -e "display dialog \"$1\" buttons {\"Pokračovat\"} default button \"Pokračovat\" with title \"Meetily Watcher\"" > /dev/null
+}
+
 stage_hf_onboarding() {
     if [ -s "$HOME/.cache/huggingface/token" ]; then
         info "HuggingFace token: už nastaveno"
         return 0
     fi
 
-    info "Potřebujeme přístup k Hugging Face (bezplatná služba hostující AI model pro rozpoznávání mluvčích)."
-    info "Pokud ještě nemáš účet, založ si ho zdarma zde:"
+    ok_dialog "Za chvíli se otevřou stránky v prohlížeči. Jde o bezplatnou službu Hugging Face, která hostuje AI model potřebný pro rozpoznávání mluvčích.
+
+Pokud ještě nemáš účet, založ si ho (zdarma) - odkaz se otevře taky."
     open "https://huggingface.co/join"
-    read -r -p "Stiskni Enter, až budeš mít účet a budeš přihlášený... "
+    ok_dialog "Pokračuj, až budeš mít účet a budeš přihlášený."
 
     for model in "${HF_GATED_MODELS[@]}"; do
-        info "Otevírám licenční stránku: $model - klikni na 'Agree and access repository'."
         open "https://huggingface.co/$model"
-        read -r -p "Stiskni Enter, až klikneš na 'Agree and access repository'... "
+        ok_dialog "Otevřela se stránka modelu:
+$model
+
+Klikni na ní na zelené tlačítko 'Agree and access repository', pak klikni Pokračovat."
     done
 
-    info "Teď vytvoř token s oprávněním 'Read'."
     open "https://huggingface.co/settings/tokens/new"
+    ok_dialog "Otevřela se stránka pro vytvoření tokenu.
+
+Vytvoř token s oprávněním 'Read', pak ho zkopíruj (Cmd+C). Klikni Pokračovat a v dalším okně ho vlož."
+
     local token
-    read -r -p "Vlož token (začíná hf_): " token
+    token=$(osascript -e 'display dialog "Vlož token (začíná hf_):" default answer "" with title "Meetily Watcher"' -e 'text returned of result' 2>/dev/null || true)
 
     if [[ ! "$token" =~ ^hf_ ]]; then
         fail_dialog "Token nevypadá platně (měl by začínat 'hf_'). Spusť instalaci znovu."
