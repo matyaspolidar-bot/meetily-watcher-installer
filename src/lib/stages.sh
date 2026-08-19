@@ -31,6 +31,29 @@ check_disk_space() {
     info "Volné místo na disku: ${available_gb}GB - OK"
 }
 
+stage_check_meetily_app() {
+    if [ -d "/Applications/meetily.app" ]; then
+        info "Meetily.app: už nainstalováno"
+        return 0
+    fi
+    # Nekopírujeme .dmg appky Meetily do našeho ZIPu (cizí distribuční práva) -
+    # místo toho nasměrujeme na oficiální stránku a počkáme, až si ji uživatel
+    # sám nainstaluje (drag-and-drop do /Applications, jak appka sama vyžaduje).
+    osascript -e 'display dialog "Ještě předtím potřebujeme appku Meetily samotnou - tenhle instalátor řeší jen automatické zpracování nahrávek, ne appku na nahrávání.
+
+Za chvíli se otevře oficiální stránka ke stažení. Stáhni verzi pro Mac (.dmg), otevři ji a přetáhni Meetily do složky Aplikace. Pak se sem vrať a klikni Pokračovat." buttons {"Otevřít stránku"} default button "Otevřít stránku" with title "Meetily Watcher"' > /dev/null
+    open "https://github.com/Zackriya-Solutions/meetily/releases"
+
+    while [ ! -d "/Applications/meetily.app" ]; do
+        local answer
+        answer=$(osascript -e 'display dialog "Až budeš mít Meetily nainstalované v Aplikacích, klikni Pokračovat." buttons {"Pokračovat"} default button "Pokračovat" with title "Meetily Watcher"' 2>/dev/null || true)
+        if [ ! -d "/Applications/meetily.app" ]; then
+            osascript -e 'display dialog "Meetily.app jsem v Aplikacích ještě nenašel - zkontroluj, že je přetažené přesně do složky Aplikace, a zkus to znovu." buttons {"OK"} default button "OK" with title "Meetily Watcher"' > /dev/null
+        fi
+    done
+    info "Meetily.app: nainstalováno"
+}
+
 stage_xcode_clt() {
     if xcode-select -p &>/dev/null; then
         info "Xcode Command Line Tools: už nainstalováno"

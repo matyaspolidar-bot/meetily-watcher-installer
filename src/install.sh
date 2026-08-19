@@ -26,6 +26,8 @@ show_welcome_dialog
 check_admin_rights
 check_disk_space 10
 
+stage_check_meetily_app
+
 stage_xcode_clt
 stage_homebrew
 stage_pyenv_ffmpeg
@@ -41,10 +43,15 @@ stage_write_plist
 stage_write_launch_prompt_plist
 
 if stage_verify; then
+    echo "1.0.0" > "$WHISPER_SETUP_DIR/.install-version"
     success_dialog "Hotovo! Meetily Watcher je nainstalovaný a běží na pozadí."
-    osascript -e 'display dialog "Poslední krok, nedá se odklikat automaticky - macOS se tě sám zeptá na pár povolení (mikrofon, nahrávání obrazovky, přístupnost). Klikni vždy Povolit/OK, jinak nahrávání a automatické spouštění nebudou fungovat.
+    osascript -e 'display dialog "Poslední krok, nedá se odklikat automaticky - macOS se tě sám postupně zeptá na pár povolení:
 
-Otevři teď Meetily a zkus to." buttons {"Otevřít Meetily"} default button "Otevřít Meetily" with title "Meetily Watcher - poslední krok"' > /dev/null
+• Mikrofon
+• Nahrávání obrazovky (potřeba pro zvuk hovoru)
+• Přístupnost (potřeba pro automatické spuštění nahrávání)
+
+Klikni vždy Povolit/OK, jinak appka nebude fungovat. Otevři teď Meetily a zkus to." buttons {"Otevřít Meetily"} default button "Otevřít Meetily" with title "Meetily Watcher - poslední krok"' > /dev/null
     open -a meetily
 else
     fail_dialog "Instalace doběhla, ale kontrola na konci našla problém - podívej se výš do logu."

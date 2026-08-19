@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Doporučení Whisper kombo</title>
+<style>
+:root{
+  --bg:#f7f5f0; --surface:#ffffff; --surface-2:#f1efe8; --text:#1a1a1a; --muted:#6b6b63;
+  --accent:#1f6f54; --accent-soft:#e3efe9; --line:#dedad0;
+  --ok:#2f6b3a; --ok-soft:#e5f0e3; --warn:#96650a; --warn-soft:#f6ecd9; --bad:#a1302f; --bad-soft:#f6e3e1;
+  --font-d:'Georgia','Times New Roman',serif; --font-b:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15170f; --surface:#1d1f16; --surface-2:#242619; --text:#eeece5; --muted:#a3a190;
+    --accent:#5fc79a; --accent-soft:#1c2c24; --line:#33362a;
+    --ok:#6fc17e; --ok-soft:#1c2c1e; --warn:#e0ac4a; --warn-soft:#302716; --bad:#e2726c; --bad-soft:#301e1c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15170f; --surface:#1d1f16; --surface-2:#242619; --text:#eeece5; --muted:#a3a190;
+  --accent:#5fc79a; --accent-soft:#1c2c24; --line:#33362a;
+  --ok:#6fc17e; --ok-soft:#1c2c1e; --warn:#e0ac4a; --warn-soft:#302716; --bad:#e2726c; --bad-soft:#301e1c;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);margin:0;line-height:1.6;font-size:15px;}
+.wrap{max-width:980px;margin:0 auto;padding:3.5rem 1.5rem 5rem;}
+.tag{display:inline-block;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:.25rem .8rem;margin-bottom:1.1rem;font-weight:600;}
+h1{font-family:var(--font-d);font-size:clamp(1.9rem,4.6vw,2.8rem);margin:0 0 .4rem;letter-spacing:-.01em;}
+.sub{color:var(--muted);font-size:1.02rem;margin:0 0 .9rem;max-width:46rem;}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;font-size:.82rem;color:var(--muted);margin-bottom:1.6rem;border-bottom:1px solid var(--line);padding-bottom:1.6rem;}
+.meta b{color:var(--text);}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.6rem;}
+.chip{font-size:.74rem;background:var(--surface-2);color:var(--muted);border-radius:99px;padding:.3rem .75rem;border:1px solid var(--line);}
+
+h2{font-family:var(--font-d);font-size:1.55rem;border-top:1px solid var(--line);padding-top:2.6rem;margin-top:3.2rem;margin-bottom:.3rem;}
+h2:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+.h2sub{color:var(--muted);font-size:.92rem;margin:0 0 1.3rem;}
+h3{font-size:1rem;margin:1.4rem 0 .4rem;}
+p{margin:.6rem 0;}
+ol{padding-left:1.3rem;margin:.6rem 0;}
+li{margin:.45rem 0;}
+
+.bluf{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:1.7rem 1.9rem;margin-bottom:1rem;position:relative;}
+.bluf .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:700;}
+.verdict{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:#fff;font-family:var(--font-d);font-size:1.15rem;font-weight:700;padding:.5rem 1.1rem;border-radius:8px;margin:.7rem 0 1rem;letter-spacing:.01em;}
+.bluf .lede{font-size:1.04rem;margin:.3rem 0 1rem;}
+.bluf-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.2rem;}
+@media (max-width:700px){.bluf-facts{grid-template-columns:1fr;}}
+.fact{background:var(--surface-2);border-radius:10px;padding:.85rem 1rem;}
+.fact .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem;}
+.fact .v{font-size:.92rem;font-weight:600;}
+
+table{width:100%;border-collapse:collapse;font-size:.87rem;margin:.5rem 0 1rem;}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--line);vertical-align:top;}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;}
+td.crit{font-weight:600;white-space:nowrap;}
+.rate-cell{white-space:nowrap;}
+.pill{display:inline-block;font-size:.72rem;padding:.18rem .6rem;border-radius:99px;font-weight:700;letter-spacing:.02em;}
+.pill.ok{background:var(--ok-soft);color:var(--ok);}
+.pill.warn{background:var(--warn-soft);color:var(--warn);}
+.pill.bad{background:var(--bad-soft);color:var(--bad);}
+.reject-table td:first-child{font-weight:600;white-space:nowrap;}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:1rem 0 1.5rem;}
+@media (max-width:700px){.grid{grid-template-columns:1fr;}}
+.card{background:var(--surface);border-radius:12px;padding:1.1rem 1.3rem;}
+.card h4{margin:0 0 .4rem;font-size:.95rem;display:flex;align-items:center;gap:.5rem;}
+.card p{margin:0;font-size:.88rem;color:var(--text);}
+.card.good{border-left:4px solid var(--ok);}
+.card.bad{border-left:4px solid var(--bad);}
+
+.note{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:.75rem 1.05rem;font-size:.85rem;margin:.9rem 0 1.3rem;color:var(--muted);}
+.note b{color:var(--text);}
+
+.codebox{background:#161616;color:#e7e6e1;border-radius:10px;overflow:hidden;margin:1rem 0;}
+.codebox-head{display:flex;align-items:center;justify-content:space-between;padding:.5rem .9rem;background:#0d0d0d;border-bottom:1px solid #2a2a2a;}
+.codebox-head span{color:#9a988f;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;}
+.copy-btn{background:#2a2a2a;color:#e7e6e1;border:1px solid #3a3a3a;border-radius:6px;padding:.35rem .75rem;font-size:.76rem;cursor:pointer;font-family:var(--font-b);transition:background .15s;}
+.copy-btn:hover{background:#3a3a3a;}
+.copy-btn.copied{background:var(--ok);border-color:var(--ok);color:#fff;}
+.codebox-body{padding:1.1rem 1.3rem;overflow-x:auto;}
+.codebox code{background:none;padding:0;color:inherit;font-family:'SF Mono','Menlo',monospace;font-size:.8rem;line-height:1.55;white-space:pre;}
+
+.steps{counter-reset:step;list-style:none;padding-left:0;}
+.steps li{counter-increment:step;position:relative;padding-left:2.3rem;margin:.8rem 0;font-size:.92rem;}
+.steps li::before{content:counter(step);position:absolute;left:0;top:0;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--accent);color:#fff;font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+a{color:var(--accent);}
+code{background:var(--surface-2);padding:.1rem .4rem;border-radius:4px;font-size:.86em;}
+footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <span class="tag">Addvery · Doporučení k nasazení</span>
+  <h1>Shrnutí kombíčka</h1>
+  <p class="sub">Shrnutí a doporučení k nahrazení vestavěného přepisu v Meetily kombinací mlx-whisper (large-v3) a WhisperX/pyannote-3.1. Zhodnocena jsou všechna kritéria, která jsme u přepisu a diarizace během celého projektu řešili - náklady, přesnost, diarizace, GDPR/§84, hardware, integrace, automatizace i škálovatelnost na týmu.</p>
+  <div class="meta">
+    <span><b>Datum:</b> 17. 8. 2026</span>
+    <span><b>Navazuje na:</b> technické zjištění mlx-whisper + WhisperX (samostatný dokument)</span>
+    <span><b>Testováno na:</b> 4 zdrojích zvuku, produkční Meetily instalaci, živém Teams hovoru</span>
+  </div>
+  <div class="chips">
+    <span class="chip">Náklady</span><span class="chip">Přesnost CZ/EN</span><span class="chip">Diarizace</span>
+    <span class="chip">Rychlost</span><span class="chip">Hardware</span><span class="chip">GDPR / §84</span>
+    <span class="chip">Integrace Meetily</span><span class="chip">Integrace Outlook</span><span class="chip">Automatizace</span>
+    <span class="chip">Streaming</span><span class="chip">Škálovatelnost</span><span class="chip">Údržba</span>
+  </div>
+
+  <div class="bluf">
+    <span class="label">BLUF - závěr napřed</span>
+    <div class="verdict">✅ GO - s podmínkami</div>
+    <p class="lede"><b>Doporučujeme nasadit Whisper kombo (mlx-whisper + WhisperX) jako náhradu vestavěného přepisu v Meetily.</b> Je to jediná z nástrojů, které jsme v tomto projektu testovali, u které přesnost, diarizace i cena vyšly dobře současně - a navíc jako jediná zpracovává vše lokálně, takže žádná data neopouští firmu. Řešení už reálně běží na produkční Meetily instalaci, ne jen v návrhu.</p>
+    <p class="lede">Instalace i nastavení pro Teams meetingy jsou popsané níže v dokumentu krok za krokem - stačí je jednou provést na každém stroji pilotního týmu.</p>
+    <div class="bluf-facts">
+      <div class="fact"><div class="k">Náklady</div><div class="v">0 Kč (jen free HF registrace)</div></div>
+      <div class="fact"><div class="k">Hlavní přínos</div><div class="v">Data zůstávají lokálně + přesnost bez kompromisu</div></div>
+      <div class="fact"><div class="k">Hlavní limit</div><div class="v">Souběžná mluva dvou lidí + jen Apple Silicon</div></div>
+    </div>
+  </div>
+
+  <h2>Hodnocení podle všech kritérií</h2>
+  <p class="h2sub">Kompletní seznam kritérií, která jsme u přepisových nástrojů v tomto projektu kdy posuzovali - napříč testováním Whisperu, Vibe, MacWhisper, Buzz i cloudových alternativ.</p>
+  <table>
+    <tr><th>Kritérium</th><th>Hodnocení</th><th>Komentář</th></tr>
+    <tr><td class="crit">Náklady</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>Vše běží lokálně zdarma, jediná "cena" je jednorázová bezplatná registrace na Hugging Face.</td></tr>
+    <tr><td class="crit">Přesnost - čeština</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>large-v3 přes mlx-whisper bez ztráty přesnosti oproti pomalé CPU verzi; jiné testované nástroje (Vibe) měly WER jen 72 %.</td></tr>
+    <tr><td class="crit">Přesnost - angličtina</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>Zachytil i klíčovou negaci na rychlé, nespisovné angličtině (sales coaching call).</td></tr>
+    <tr><td class="crit">Rozpoznání mluvčích (diarizace)</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>Správně rozlišil 6 mluvčích i podobně znějící hlasy, ale s mírným přesegmentováním (+1 až +2 navíc).</td></tr>
+    <tr><td class="crit">Souběžná mluva dvou lidí</td><td class="rate-cell"><span class="pill bad">Limit</span></td><td>Při skutečně souběžném mluvení po celou dobu přehluší bližší hlas ten vzdálenější. Krátké vpády, běžné na meetingu, problém nezpůsobují.</td></tr>
+    <tr><td class="crit">Rychlost</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>2,6× rychleji než reálný čas na Apple Silicon (M4); diarizace běží zhruba v reálném čase.</td></tr>
+    <tr><td class="crit">Hardwarové nároky</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>mlx-whisper běží jen na Apple Silicon (M1-M4) - Intel Mac ani Windows nepodporuje. Nutno ověřit u všech 5 pilotních uživatelů.</td></tr>
+    <tr><td class="crit">Umístění dat / GDPR, §84</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>Veškeré zpracování probíhá lokálně na zařízení, žádná nahrávka ani přepis neopouští firmu - nejsilnější rozdíl oproti cloudovým alternativám.</td></tr>
+    <tr><td class="crit">Integrace s Meetily</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>Appka a UI se pro uživatele nemění, jen se nahrazuje "mozek" na pozadí. Ověřeno na produkční databázi.</td></tr>
+    <tr><td class="crit">Integrace s Outlook kalendářem</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>Řešitelné bez čekání na IT přes veřejný ICS feed kalendáře, viz sekce "Jak vyřešit propojení s Outlookem / kalendářem" níže. Robustnější varianta přes Microsoft Graph API čeká na schválení IT.</td></tr>
+    <tr><td class="crit">Automatizace provozu</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>launchd démon kontroluje nové nahrávky každé 2 minuty a zpracuje je bez zásahu; ověřeno na reálných meetinzích.</td></tr>
+    <tr><td class="crit">Živé streamování přepisu</td><td class="rate-cell"><span class="pill bad">Nepodporováno</span></td><td>Jde o dávkové zpracování po nahrávce, ne živé titulky za chodu jako u některých placených nástrojů.</td></tr>
+    <tr><td class="crit">Formátování / interpunkce</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>U rychlé nespisovné angličtiny vyšel přepis obsahově správně, ale bez interpunkce a velkých písmen.</td></tr>
+    <tr><td class="crit">Instalační a údržbová náročnost</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>Dvě oddělená Python prostředí (kvůli rozdílným verzím), Hugging Face token a schválení tří licencí - jednorázově 10-20 minut.</td></tr>
+    <tr><td class="crit">Reálná jména mluvčích</td><td class="rate-cell"><span class="pill ok">OK</span></td><td>Ruční mapování Speaker_00/01 na jména po schůzce, implementováno a ověřeno end-to-end.</td></tr>
+    <tr><td class="crit">Sdílené úložiště přepisů</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>Implementováno, ale zatím do lokální složky - přechod na OneDrive čeká na přihlášení firemního účtu na tomto Macu.</td></tr>
+    <tr><td class="crit">Škálovatelnost na pilotní tým (5 lidí)</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>Technicky hotové a otestované na jednom stroji, ale ještě nepřenesené na ostatní Macy a bez delšího provozního testu.</td></tr>
+    <tr><td class="crit">Závislost na jedné osobě (údržba)</td><td class="rate-cell"><span class="pill warn">S výhradou</span></td><td>Jde o interní řešení bez komerční podpory - opravu a rozvoj aktuálně zajišťuje jen jeden člověk.</td></tr>
+  </table>
+
+  <h2>Plusy</h2>
+  <p class="h2sub">Body, kde kombo vychází stejně dobře nebo lépe než všechny testované alternativy.</p>
+  <div class="grid">
+    <div class="card good"><h4>💰 Nulové náklady</h4><p>Vše lokálně, žádná platba, žádný limit na počet použití - na rozdíl od Jamie, Speechmatics, ElevenLabs nebo MacWhisper.</p></div>
+    <div class="card good"><h4>🔒 Data zůstávají ve firmě</h4><p>Zpracování probíhá lokálně na zařízení, nic neopouští Addvery - klíčové pro §84 a GDPR, což cloudové nástroje nesplňují.</p></div>
+    <div class="card good"><h4>🎯 Přesnost bez kompromisu</h4><p>large-v3 přes mlx-whisper má stejnou přesnost jako pomalá CPU verze, i na nespisovné angličtině a reálném sales hovoru.</p></div>
+    <div class="card good"><h4>🗣️ Funkční rozpoznání mluvčích</h4><p>Rozliší i podobně znějící hlasy a odliší vypravěče od živě mluvících, se jmény mluvčích doplnitelnými po schůzce.</p></div>
+    <div class="card good"><h4>⚡ Rychlejší než realtime</h4><p>22,7 s na 60 s zvuku na Apple Silicon - žádné čekání delší než samotná nahrávka.</p></div>
+    <div class="card good"><h4>🧩 Beze změny pro uživatele</h4><p>Meetily zůstává stejnou appkou pro nahrávání, jen s přesnějším přepisem na pozadí - žádné školení navíc.</p></div>
+    <div class="card good"><h4>🌍 Překlad CZ→EN vestavěně</h4><p>Jedním krokem, plynule; opačný směr funguje spolehlivě přes druhý krok.</p></div>
+    <div class="card good"><h4>🤖 Už reálně nasazeno</h4><p>Přepis, diarizace, zápis do Meetily databáze i automatické spouštění přes launchd aktuálně běží, ne jen v návrhu.</p></div>
+  </div>
+
+  <h2>Nedostatky</h2>
+  <p class="h2sub">Žádný z bodů níže není pro běžný sales meeting blokující, ale je potřeba je znát a počítat s nimi před plným rozšířením.</p>
+  <div class="grid">
+    <div class="card bad"><h4>🎙️🎙️ Souběžná mluva</h4><p>Dva lidé mluvící doslova najednou po celou dobu = ztráta vzdálenějšího hlasu v přepisu.</p></div>
+    <div class="card bad"><h4>🔢 Přesegmentování diarizace</h4><p>Na 6 skutečných mluvčích model občas najde o jednoho víc - pro přesné číslo by chtělo ruční kontrolu.</p></div>
+    <div class="card bad"><h4>💻 Jen Apple Silicon</h4><p>Na Intel Macu ani Windows mlx-whisper neběží - je potřeba ověřit hardware u všech pilotních uživatelů.</p></div>
+    <div class="card bad"><h4>📅 Outlook integrace mimo appku</h4><p>Meetily nemá API pro spuštění nahrávání, řešení musí jít mimo ni - rychlá varianta bez IT existuje, robustnější čeká na schválení IT.</p></div>
+    <div class="card bad"><h4>📡 Žádné živé streamování</h4><p>Dávkové zpracování po nahrávce, ne plynulé titulky za chodu.</p></div>
+    <div class="card bad"><h4>✏️ Formátování u angličtiny</h4><p>Bez interpunkce a velkých písmen u rychlé nespisovné řeči - čitelné, ale potřebuje dodatečnou úpravu.</p></div>
+    <div class="card bad"><h4>🔧 Instalační tření</h4><p>Dvě oddělená virtuální prostředí kvůli rozdílným verzím Pythonu a schválení tří licencí na Hugging Face.</p></div>
+    <div class="card bad"><h4>🧑‍🔧 Údržba na jedné osobě</h4><p>Bez komerční podpory - rozvoj a opravy aktuálně stojí na jednom člověku v týmu.</p></div>
+    <div class="card bad"><h4>🌐 Míchání češtiny a angličtiny</h4><p>Whisper poznává jazyk hovoru automaticky, ale jen jednou za úsek mluvčího. Pipeline byl upraven tak, aby jazyk poznával zvlášť pro každého mluvčího (ne pro celou nahrávku najednou) - u typického střídání "jeden mluvčí = jeden jazyk" to funguje spolehlivě. U rychlého přepínání jazyků v jedné souvislé promluvě téhož člověka může být rozpoznání mluvčích i jazyka méně přesné.</p></div>
+  </div>
+
+<h2>Krok za krokem: instalace a příprava na Teams meeting</h2>
+  <div class="note" style="border-color:#c00;background:#fee"><b>⚠️ ARCHIVOVÁNO:</b> Tenhle ruční postup (kopírování skriptu do Terminálu) už není aktuální instalační cesta - nahrazen jedním souborem ke stažení a spuštění (appka na dvojklik, žádný Terminal). Sekce níže zůstává jako záznam rozhodnutí (proč dva oddělené venvy, proč <code>pyannote/speaker-diarization-3.1</code> místo community-1, historie ffmpeg-PATH bugu). Aktuální instalátor: repo <code>meetily-watcher-installer</code>.</div>
+  <p class="h2sub">Od stažení po první opravdový meeting na Microsoft Teams, se všemi kroky potřebnými k tomu, aby přepis zachytil obě strany hovoru a proběhl automaticky na pozadí.</p>
+
+  <h3>1. Jednorázová instalace Whisper kombo</h3>
+  <p>Návod pro Apple Silicon Mac (M1-M4) - na Intel Macu ani na Windows mlx-whisper neběží.</p>
+  <ol class="steps">
+    <li>Založit si zdarma účet na <a href="https://huggingface.co/join">huggingface.co</a> (potřeba jen pro stažení diarizačních modelů).</li>
+    <li>Přijmout licence u tří modelů - otevřít všechny tři stránky a na každé kliknout na "Agree and access repository": <a href="https://huggingface.co/pyannote/speaker-diarization-3.1">pyannote/speaker-diarization-3.1</a>, <a href="https://huggingface.co/pyannote/segmentation-3.0">pyannote/segmentation-3.0</a> a <a href="https://huggingface.co/pyannote/speaker-diarization-community-1">pyannote/speaker-diarization-community-1</a>.</li>
+    <li>Vytvořit přístupový token: na huggingface.co <a href="https://huggingface.co/settings/tokens">Settings → Access Tokens → New token</a>, typ "Read", zkopírovat (začíná <code>hf_...</code>).</li>
+    <li>Otevřít na Macu Terminál (Spotlight → napsat "Terminal" → Enter).</li>
+    <li>Zkopírovat celý skript níže a vložit ho do Terminálu (Cmd+V), potvrdit Enterem. Během běhu se jednou zeptá na token z kroku 3.</li>
+    <li>Počkat - skript stáhne cca 5-6 GB modelů, podle rychlosti internetu 10-20 minut.</li>
+    <li>Skript na konci sám nainstaluje i watcher a launchd démona - automatické zpracování nových nahrávek pak běží na pozadí bez dalšího kroku.</li>
+  </ol>
+
+  <div class="codebox">
+    <div class="codebox-head">
+      <span>bash</span>
+      <button class="copy-btn" onclick="copyScript(this, 'setup-script')">Kopírovat</button>
+    </div>
+    <div class="codebox-body"><code id="setup-script">#!/usr/bin/env bash
+set -e
+
+echo "== Setup: mlx-whisper (přepis) + WhisperX (rozpoznání mluvčích) =="
+
+# Xcode Command Line Tools (potřeba pro kompilaci balíčků)
+if ! xcode-select -p &>/dev/null; then
+  echo "-> Instaluji Xcode Command Line Tools, potvrď okno, které se otevře..."
+  xcode-select --install
+  echo "Po dokončení instalace spusť tento skript znovu."
+  exit 0
+fi
+
+# Homebrew
+if ! command -v brew &>/dev/null; then
+  echo "-> Instaluji Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+echo "-> Instaluji pyenv a ffmpeg..."
+brew install pyenv ffmpeg
+
+echo "-> Instaluji Python 3.13 (WhisperX potřebuje verzi 3.13 nebo nižší)..."
+pyenv install -s 3.13.2
+
+mkdir -p ~/whisper-setup && cd ~/whisper-setup
+
+echo "-> Vytvářím prostředí pro mlx-whisper (přepis)..."
+python3 -m venv mlx-env
+source mlx-env/bin/activate
+pip install --upgrade pip -q
+pip install mlx-whisper -q
+echo "-> Stahuji model large-v3 (přepis, cca 3 GB)..."
+python3 -c "from huggingface_hub import snapshot_download; snapshot_download('mlx-community/whisper-large-v3-mlx')"
+deactivate
+
+echo "-> Vytvářím prostředí pro WhisperX (rozpoznání mluvčích)..."
+"$(pyenv root)/versions/3.13.2/bin/python3" -m venv whisperx-env
+source whisperx-env/bin/activate
+pip install --upgrade pip -q
+pip install whisperx -q
+
+read -p "Vlož svůj Hugging Face token (začíná 'hf_'): " HF_TOKEN
+echo "export HF_TOKEN=\"$HF_TOKEN\"" >> ~/.zshrc
+
+echo "-> Stahuji diarizační modely (pyannote, cca 2 GB)..."
+python3 -c "
+from huggingface_hub import login
+login(token='$HF_TOKEN')
+from pyannote.audio import Pipeline
+Pipeline.from_pretrained('pyannote/speaker-diarization-3.1')
+"
+deactivate
+
+echo "-> Instaluji watcher a automatické spouštění (launchd)..."
+cd ~/whisper-setup
+
+cat > transcribe_meeting.sh &lt;&lt;'TRANSCRIBE_EOF'
+#!/usr/bin/env bash
+# Přepis + rozpoznání mluvčích na jednom audio souboru.
+# Použití: ./transcribe_meeting.sh cesta/k/audio.wav [vystup.json]
+set -e
+
+AUDIO="$1"
+OUT="${2:-/tmp/transcribe_meeting_output.json}"
+WORKDIR=~/whisper-setup
+
+if [ -z "$AUDIO" ]; then
+  echo "Použití: $0 cesta/k/audio.wav [vystup.json]"
+  exit 1
+fi
+if [ ! -f "$AUDIO" ]; then
+  echo "Soubor nenalezen: $AUDIO"
+  exit 1
+fi
+
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+echo "-> Přepisuji (mlx-whisper, large-v3)..."
+source "$WORKDIR/mlx-env/bin/activate"
+python3 - "$AUDIO" "$TMP/transcript.json" &lt;&lt;'PYEOF'
+import sys, json, mlx_whisper
+audio, out = sys.argv[1], sys.argv[2]
+result = mlx_whisper.transcribe(audio, path_or_hf_repo='mlx-community/whisper-large-v3-mlx')
+json.dump(result['segments'], open(out, 'w'), ensure_ascii=False)
+PYEOF
+deactivate
+
+echo "-> Rozpoznávám mluvčí (WhisperX/pyannote)..."
+source "$WORKDIR/whisperx-env/bin/activate"
+python3 - "$AUDIO" "$TMP/diarization.json" &lt;&lt;'PYEOF'
+import sys, json
+from whisperx.diarize import DiarizationPipeline
+audio, out = sys.argv[1], sys.argv[2]
+# Vynuceno explicitně: výchozí model WhisperX (speaker-diarization-community-1)
+# se v testech přesegmentovává výrazněji než tento, viz report výše.
+dp = DiarizationPipeline(model_name='pyannote/speaker-diarization-3.1', device='cpu')
+df = dp(audio)
+records = df[['start', 'end', 'speaker']].to_dict('records')
+json.dump(records, open(out, 'w'), ensure_ascii=False)
+PYEOF
+deactivate
+
+echo "-> Spojuji přepis a mluvčí..."
+python3 - "$TMP/transcript.json" "$TMP/diarization.json" "$OUT" &lt;&lt;'PYEOF'
+import sys, json
+
+transcript = json.load(open(sys.argv[1]))
+diar = json.load(open(sys.argv[2]))
+out_path = sys.argv[3]
+
+def find_speaker(seg):
+    best, best_overlap = None, 0
+    for d in diar:
+        overlap = min(seg['end'], d['end']) - max(seg['start'], d['start'])
+        if overlap > best_overlap:
+            best_overlap, best = overlap, d['speaker']
+    return best or 'SPEAKER_?'
+
+merged = []
+for seg in transcript:
+    merged.append({
+        'start': seg['start'],
+        'end': seg['end'],
+        'text': seg['text'].strip(),
+        'speaker': find_speaker(seg),
+    })
+
+json.dump(merged, open(out_path, 'w'), ensure_ascii=False, indent=2)
+
+lines = []
+last_speaker = None
+for seg in merged:
+    ts = f"[{int(seg['start']//60):02d}:{int(seg['start']%60):02d}]"
+    if seg['speaker'] != last_speaker:
+        lines.append(f"\n{ts} {seg['speaker']}:")
+        last_speaker = seg['speaker']
+    lines.append(seg['text'])
+
+print(' '.join(lines).strip())
+PYEOF
+
+echo ""
+echo "Hotovo. Strukturovaný výstup (JSON) uložen do: $OUT"
+TRANSCRIBE_EOF
+chmod +x transcribe_meeting.sh
+
+echo "-> Registruji launchd démona (kontrola nových nahrávek každé 2 minuty)..."
+mkdir -p ~/Library/LaunchAgents
+cat > ~/Library/LaunchAgents/com.addvery.meetily-watcher.plist &lt;&lt;PLIST_EOF
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.addvery.meetily-watcher&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/opt/homebrew/bin/python3&lt;/string&gt;
+        &lt;string&gt;$HOME/whisper-setup/meetily_autowatch.py&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;PATH&lt;/key&gt;
+        &lt;string&gt;/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin&lt;/string&gt;
+    &lt;/dict&gt;
+    &lt;key&gt;StartInterval&lt;/key&gt;
+    &lt;integer&gt;120&lt;/integer&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;$HOME/whisper-setup/watcher.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;$HOME/whisper-setup/watcher.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+PLIST_EOF
+
+launchctl unload ~/Library/LaunchAgents/com.addvery.meetily-watcher.plist 2>/dev/null
+launchctl load ~/Library/LaunchAgents/com.addvery.meetily-watcher.plist
+
+echo ""
+echo "=========================================================="
+echo "Hotovo. Prostředí jsou v ~/whisper-setup/"
+echo "  source ~/whisper-setup/mlx-env/bin/activate       # přepis"
+echo "  source ~/whisper-setup/whisperx-env/bin/activate  # diarizace"
+echo ""
+echo "Automatické zpracování nových nahrávek z Meetily uz bezi na pozadí"
+echo "(kontrola kazde 2 minuty). Log najdes v ~/whisper-setup/watcher.log"
+echo "=========================================================="</code></div>
+  </div>
+
+  <div class="note">Skript nainstaluje i watcher a automatické spouštění. Po doběhnutí je ještě potřeba ručně zkopírovat <code>export_transcript.py</code> a <code>apply_speaker_names.py</code> do <code>~/whisper-setup/</code> (vznikly až po hlavním testu, skript je zatím neobsahuje) - kód obou souborů je v doprovodném technickém dokumentu "Kompletní zjištění: mlx-whisper + WhisperX".</div>
+  <div class="note"><b>Oprava z reálného provozu:</b> launchd démon neměl v prostředí <code>/opt/homebrew/bin</code>, takže nenašel <code>ffmpeg</code> a každé automatické zpracování selhalo (i když ruční spuštění ve Terminálu fungovalo bez problému). Skript výše už opravu obsahuje (<code>EnvironmentVariables</code> s PATH v plistu) - ověřeno, po opravě watcher doběhl v pořádku.</div>
+
+  <h3>2. Ověření nastavení zvuku v Meetily</h3>
+  <p>Meetily má vlastní vestavěné nahrávání zvuku z Teams (i jiných appek) - žádný virtuální audio ovladač (např. BlackHole) není potřeba. V appce jsou mikrofon a systémový zvuk dvě oddělená zařízení, která se nahrávají zvlášť a pak spojí.</p>
+  <ol class="steps">
+    <li>V Meetily otevřít Settings (ozubené kolo v levém panelu) a scrollovat na sekci <b>Default Audio Devices</b>.</li>
+    <li>Zkontrolovat <b>Microphone</b> - zachycuje vlastní hlas ("Records your voice and ambient sound").</li>
+    <li>Zkontrolovat <b>System Audio</b> - zachycuje zvuk z počítače včetně hovorů ("Records computer audio (music, calls, etc.)"), tedy i druhou stranu Teams hovoru.</li>
+    <li>V sekci <b>System Audio Backend</b> nechat vybraný <b>Core Audio</b> ("Direct Core Audio API - Lower latency, more control") - na tomto stroji je to výchozí a aktivní volba. Druhá možnost, ScreenCaptureKit, byla v testu nepoužitá/vypnutá.</li>
+  </ol>
+  <div class="note">Ověřeno přímo v appce (verze na tomto Macu): mikrofon a systémový zvuk se nastavují nezávisle a mění se jen při nové nahrávací session. Toto nastavení se dělá jen jednou.</div>
+
+  <h3>3. Ověřeno na živém Teams hovoru</h3>
+  <div class="note"><b>Test proveden 18. 8. 2026 na produkčním stroji, s jedním i se dvěma mluvčími.</b> Meetily nahrálo mikrofon i systémový zvuk z Teams zvlášť (potvrzeno v metadatech nahrávky), watcher nahrávku automaticky zpracoval a zapsal přepis zpět do Meetily. Přepis: <i>"Ve zlatnictví u Orla je nahlášen podezřelý nález. Rozbité vitrýny, rozházené šperky, ale žádné známky vynuceného vstupu."</i> Rozpoznání dvou odlišných mluvčích v jedné nahrávce bylo ověřeno samostatně - výsledek a přesný přepis jsou v sekci "Co jsme dnes reálně ověřili" níže.</div>
+  <p>Kontrolní body pro instalaci na dalším stroji:</p>
+  <ul>
+    <li>Výsledný přepis obsahuje obě strany hovoru jako odlišené mluvčí, ne jen vlastní hlas.</li>
+    <li>Log <code>~/whisper-setup/watcher.log</code> neobsahuje chybu.</li>
+    <li>Pokud druhá strana hovoru v přepisu chybí, zkontrolovat v kroku 2 nastavení System Audio v Meetily Settings - nejčastější příčinou je přepnuté nebo vypnuté zařízení.</li>
+  </ul>
+
+  <h2>Návod na použití</h2>
+  <p class="h2sub">Instalace a audio routing z předchozí sekce se dělají jen jednou. Tohle je už běžný denní provoz - bez dalšího nastavování.</p>
+
+  <h3>Rychlý postup pro každý meeting</h3>
+  <ol class="steps">
+    <li>Otevřít Teams a připojit se do meetingu jako obvykle.</li>
+    <li>V Meetily kliknout na "Start Recording".</li>
+    <li>Po meetingu kliknout na "Stop" - Meetily uloží nahrávku jako dosud.</li>
+    <li>Nechat 2-5 minut běžet démona na pozadí, žádný další krok potřeba.</li>
+    <li>Otevřít meeting v Meetily - přepis je hotový, se rozlišenými mluvčími.</li>
+  </ol>
+
+  <h3>Kde najdeš hotový přepis</h3>
+  <ul>
+    <li>Přímo v Meetily, v otevřeném meetingu - přepis se jmény mluvčích (SPEAKER_00/01... nebo reálná jména, pokud jsou doplněná).</li>
+    <li>Čitelná kopie navíc jako <code>.md</code> soubor ve sdílené složce <code>~/Addvery-Prepisy-Sdilene/</code> - odsud se přepis dá i posílat dál nebo dávat ke čtení Claude.</li>
+  </ul>
+
+  <h3>Jak doplnit reálná jména mluvčích</h3>
+  <ol class="steps">
+    <li>Otevřít <code>watcher-state/&lt;meeting_id&gt;_speakers.json</code> - watcher tam po zpracování meetingu založí šablonu se všemi nalezenými labely.</li>
+    <li>Doplnit jména k jednotlivým <code>SPEAKER_00</code>, <code>SPEAKER_01</code>...</li>
+    <li>Spustit <code>python3 apply_speaker_names.py &lt;meeting_id&gt;</code> - jména se přepíšou zpět do Meetily i do exportu ve sdílené složce.</li>
+  </ol>
+  <div class="note"><b>Automatické tahání jmen z Teams zatím není reálné.</b> Vyžadovalo by to Microsoft Graph API přístup k seznamu účastníků (stejná překážka jako u kalendáře - schválení registrace v Microsoft Entra ID od IT) a navíc napárování "kdo mluvil kdy" na konkrétní jméno, což Teams zpřístupňuje jen přes Teams Premium/compliance recording API - vyšší tarif, který Addvery pravděpodobně nemá. Ruční mapování výše (cca 30 vteřin na meeting) zůstává praktickým řešením, dokud se to nevyřeší spolu s kalendářovou integrací.</div>
+
+  <h3>Jak najít meeting_id</h3>
+  <p>Vidět je v adrese (URL) při otevřeném meetingu v Meetily, nebo dotazem do SQLite databáze (<code>meetings</code> tabulka, sloupec <code>id</code>).</p>
+
+  <h3>Jak to použít s Claude</h3>
+  <p>Přepisy jsou čitelné <code>.md</code> soubory ve sdílené složce <code>~/Addvery-Prepisy-Sdilene/</code> - stačí tuhle složku ukázat Claude (Desktop/Code) a nechat ho udělat shrnutí, action items nebo hledání napříč meetingy.</p>
+
+  <h3>Jak zkontrolovat, že vše běží</h3>
+  <ul>
+    <li>Log automatického zpracování: <code>~/whisper-setup/watcher.log</code>.</li>
+    <li>Jestli démon běží: <code>launchctl list | grep meetily-watcher</code> v Terminálu.</li>
+  </ul>
+
+  <h2>Co jsme dnes reálně ověřili na živém provozu</h2>
+  <div class="bluf" style="margin-bottom:1.5rem">
+    <span class="label">BLUF - závěr napřed</span>
+    <p class="lede" style="margin-top:.6rem"><b>Whisper kombo dnes prošlo prvním opravdovým testem na živém Teams hovoru a rozpoznání více mluvčích funguje.</b> Cestou se navíc našla a opravila jedna skutečná produkční chyba, která by jinak tiše kazila každé automatické zpracování. Jediné, co dnešní test nepotvrdil, je automatické tahání reálných jmen z Teams - to zůstává ruční, ze stejného důvodu jako kalendář (IT schválení).</p>
+  </div>
+
+  <h3>1. Živý Teams hovor - zachyceno a přepsáno správně</h3>
+  <p>Založen skutečný Teams meeting, Meetily spuštěno na nahrávání, hovor ukončen po pár vteřinách řeči. Watcher nahrávku automaticky našel a zpracoval bez ručního zásahu.</p>
+  <div class="note">Metadata nahrávky potvrzují oddělené zachycení mikrofonu (<code>MacBook Air Microphone</code>) a systémového zvuku (<code>MacBook Air Speakers</code>). Výsledný přepis: <i>"Ve zlatnictví u Orla je nahlášen podezřelý nález. Rozbité vitrýny, rozházené šperky, ale žádné známky vynuceného vstupu."</i> - přesně, bez chyby.</div>
+
+  <h3>2. Nalezena a opravena produkční chyba (ffmpeg)</h3>
+  <p>Automatické zpracování přes launchd démona opakovaně padalo na <code>FileNotFoundError: ffmpeg</code>, i když ruční spuštění stejného skriptu v Terminálu fungovalo bez problému. Příčina: launchd běží s minimálním PATH, který neobsahuje <code>/opt/homebrew/bin</code>, kde je nainstalovaný <code>ffmpeg</code> přes Homebrew.</p>
+  <div class="note"><b>Opraveno a ověřeno.</b> Do konfigurace launchd démona (<code>com.addvery.meetily-watcher.plist</code>) přidán explicitní <code>PATH</code> - viz opravený instalační skript výše. Po opravě watcher automaticky doprocesoval i starší nahrávky, které předtím opakovaně selhávaly.</div>
+
+  <h3>3. Rozpoznání dvou mluvčích - ověřeno</h3>
+  <p>Simulován druhý účastník hovoru: vlastní hlas do mikrofonu + syntetický hlas (macOS <code>say</code>) přehraný přes systémový zvuk současně v jedné nahrávce. Cílem bylo ověřit, že diarizace rozliší dva zdroje zvuku, ne jen jeden smíchaný kanál.</p>
+  <div class="note"><b>Výsledek: rozlišeno správně, jako dva odlišní mluvčí.</b></div>
+  <table>
+    <tr><th>Čas</th><th>Mluvčí</th><th>Text</th></tr>
+    <tr><td>00:00</td><td>SPEAKER_01</td><td>Vidím telefon, flašku, jídlo, židle, obličej, stůl.</td></tr>
+    <tr><td>00:30</td><td>SPEAKER_00</td><td>Dobrý den, tady je druhý účastník hovoru. Testujeme, jestli nás systém rozpozná jako dvě různé osoby.</td></tr>
+  </table>
+  <p>Značení <code>SPEAKER_00</code>/<code>SPEAKER_01</code> odpovídá požadovanému "Speaker 1, 2, 3" - to už systém dělá automaticky u každé nahrávky s více mluvčími, žádná úprava není potřeba.</p>
+
+  <h3>4. Reálná jména automaticky z Teams - vyhodnoceno, není teď proveditelné</h3>
+  <p>Prověřeno jako reakce na dnešní test. Vyžadovalo by to Microsoft Graph API (schválení IT, stejně jako kalendář) a navíc data o tom, kdo přesně mluvil kdy - to Teams zpřístupňuje jen přes vyšší tarif (Teams Premium/compliance recording), který Addvery pravděpodobně nemá. Zůstává u ručního mapování jmen (viz sekce "Návod na použití" výše) - je to jediný krok navíc, cca 30 vteřin na meeting.</p>
+
+  <h2>Jak vyřešit propojení s Outlookem / kalendářem</h2>
+  <p class="h2sub">Meetily nemá žádnou integraci s Outlookem (ověřeno přímo v binárce appky) a nemá ani API pro spuštění nahrávání zvenčí - jen tlačítko ve vlastním UI. Řešení proto musí obejít appku zvenku, ne skrz ni. Existují dvě cesty, jde je i kombinovat.</p>
+
+  <h3>Varianta A: Microsoft Graph API (robustní, ale čeká na IT)</h3>
+  <p>Malý Python skript běžící na pozadí (launchd démon, stejný princip jako watcher) by pravidelně kontroloval firemní kalendář přes Microsoft Graph API a při začátku meetingu automaticky spustil nahrávání.</p>
+  <ol class="steps">
+    <li>IT/M365 administrátor Addvery zaregistruje appku v Microsoft Entra ID (Azure Portal → App registrations → New registration).</li>
+    <li>Přidá appce oprávnění <code>Calendars.Read</code> (delegated) a předá Client ID a Tenant ID.</li>
+    <li>Skript se přihlásí (OAuth, typicky device code flow) a pravidelně stahuje nadcházející meetingy z kalendáře.</li>
+    <li>Když meeting začíná, skript přes AppleScript klikne na "Start Recording" v Meetily a do databáze (tabulka <code>meetings</code>) dopíše název meetingu a účastníky z kalendáře.</li>
+  </ol>
+  <div class="note"><b>Blokující krok:</b> bod 1 a 2 musí jednou schválit IT/M365 administrátor Addvery - bez tohoto schválení nejde pokračovat, a termín schválení není v naší kontrole.</div>
+
+  <h3>Varianta B: veřejný ICS feed kalendáře (rychlejší, bez IT schválení)</h3>
+  <p>Dá se rozjet hned, nezávisle na IT - Outlook umí kalendář publikovat jako veřejný odkaz (ICS/HTML), který se dá jen pravidelně stahovat a číst.</p>
+  <ol class="steps">
+    <li>V Outlook na webu: Nastavení → Kalendář → Sdílené kalendáře → "Publikovat kalendář" → zkopírovat vygenerovaný ICS odkaz.</li>
+    <li>Skript (Python, knihovna <code>icalendar</code>) stahuje tenhle odkaz každých pár minut a najde nadcházející meetingy.</li>
+    <li>Při začátku meetingu spustí nahrávání stejným způsobem jako ve variantě A (AppleScript klik na tlačítko v Meetily).</li>
+  </ol>
+  <div class="note">Nevýhoda: publikovaný ICS feed může mít omezené detaily podle nastavení viditelnosti kalendáře, a odkaz je potřeba jednou ručně vygenerovat pro každého uživatele.</div>
+
+  <h3>Doporučení</h3>
+  <p>Začít s variantou B, aby propojení s kalendářem fungovalo hned a nezávisle na IT, a variantu A řešit paralelně s IT jako trvalejší a robustnější řešení do budoucna.</p>
+
+  <footer>Vychází z testování na 4 zdrojích zvuku (TV nahrávka s 6 mluvčími, reálný anglický sales hovor, 3× živá nahrávka na tomto Macu, benchmark velikostí Whisper modelů) a z nasazení na produkční Meetily instalaci. Podrobný technický popis, naměřená čísla a kód watcheru: dokument "Kompletní zjištění: mlx-whisper + WhisperX". Ověřovací stránky s audiem a přepisem: <a href="https://claude.ai/code/artifact/229cf7ba-8007-4d8e-b9e7-8cd28962f657">diarizace</a> · <a href="https://claude.ai/code/artifact/f6ff09fc-deb6-4a64-9561-4129d6f0b053">překlady</a> · <a href="https://claude.ai/code/artifact/01bba7d0-a5f4-4067-883a-fd4661322c53">živé testy</a>.</footer>
+</div>
+
+<script>
+function copyScript(btn, elementId) {
+  var text = document.getElementById(elementId).textContent;
+  var onCopied = function () {
+    var original = 'Kopírovat';
+    btn.textContent = 'Zkopírováno ✓';
+    btn.classList.add('copied');
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1800);
+  };
+  var fallbackCopy = function () {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); onCopied(); }
+    catch (e) { btn.textContent = 'Nepodařilo se, označ a Cmd+C'; }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onCopied, fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+</script>
+</body>
+</html>
