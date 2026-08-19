@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meetily Watcher - instalace</title>
+<style>
+:root{
+  --bg:#f7f5f0; --surface:#ffffff; --surface-2:#f1efe8; --text:#1a1a1a; --muted:#6b6b63;
+  --accent:#1f6f54; --accent-soft:#e3efe9; --line:#dedad0;
+  --ok:#2f6b3a; --ok-soft:#e5f0e3; --warn:#96650a; --warn-soft:#f6ecd9; --bad:#a1302f; --bad-soft:#f6e3e1;
+  --font-d:'Georgia','Times New Roman',serif; --font-b:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15170f; --surface:#1d1f16; --surface-2:#242619; --text:#eeece5; --muted:#a3a190;
+    --accent:#5fc79a; --accent-soft:#1c2c24; --line:#33362a;
+    --ok:#6fc17e; --ok-soft:#1c2c1e; --warn:#e0ac4a; --warn-soft:#302716; --bad:#e2726c; --bad-soft:#301e1c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15170f; --surface:#1d1f16; --surface-2:#242619; --text:#eeece5; --muted:#a3a190;
+  --accent:#5fc79a; --accent-soft:#1c2c24; --line:#33362a;
+  --ok:#6fc17e; --ok-soft:#1c2c1e; --warn:#e0ac4a; --warn-soft:#302716; --bad:#e2726c; --bad-soft:#301e1c;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);margin:0;line-height:1.6;font-size:15px;}
+.wrap{max-width:760px;margin:0 auto;padding:3.5rem 1.5rem 5rem;}
+.tag{display:inline-block;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:.25rem .8rem;margin-bottom:1.1rem;font-weight:600;}
+h1{font-family:var(--font-d);font-size:clamp(1.9rem,4.6vw,2.6rem);margin:0 0 .4rem;letter-spacing:-.01em;}
+.sub{color:var(--muted);font-size:1.02rem;margin:0 0 2.2rem;max-width:42rem;}
+h2{font-family:var(--font-d);font-size:1.3rem;border-top:1px solid var(--line);padding-top:2rem;margin-top:2.4rem;margin-bottom:.6rem;}
+p{margin:.6rem 0;}
+ol,ul{padding-left:1.3rem;margin:.6rem 0;}
+li{margin:.5rem 0;}
+
+.codebox{background:#161616;color:#e7e6e1;border-radius:10px;overflow:hidden;margin:1.2rem 0;}
+.codebox-head{display:flex;align-items:center;justify-content:space-between;padding:.5rem .9rem;background:#0d0d0d;border-bottom:1px solid #2a2a2a;}
+.codebox-head span{color:#9a988f;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;}
+.copy-btn{background:#2a2a2a;color:#e7e6e1;border:1px solid #3a3a3a;border-radius:6px;padding:.35rem .75rem;font-size:.76rem;cursor:pointer;font-family:var(--font-b);transition:background .15s;}
+.copy-btn:hover{background:#3a3a3a;}
+.copy-btn.copied{background:var(--ok);border-color:var(--ok);color:#fff;}
+.codebox-body{padding:1.1rem 1.3rem;overflow-x:auto;}
+.codebox code{background:none;padding:0;color:inherit;font-family:'SF Mono','Menlo',monospace;font-size:.85rem;line-height:1.55;white-space:pre;}
+
+.note{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:.75rem 1.05rem;font-size:.85rem;margin:.9rem 0 1.3rem;color:var(--muted);}
+.note b{color:var(--text);}
+code.inline{background:var(--surface-2);border-radius:5px;padding:.1rem .4rem;font-family:'SF Mono','Menlo',monospace;font-size:.85em;}
+footer{margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="tag">Instalace</span>
+  <h1>Meetily Watcher</h1>
+  <p class="sub">Automatický přepis a diarizace schůzek (Whisper + rozpoznání mluvčích) běžící na pozadí. Instalace jedním příkazem - bez ZIPu, bez klikání přes Nastavení systému.</p>
+
+  <h2>1. Otevři Terminál</h2>
+  <p>Spotlight (lupa vpravo nahoře, nebo <code class="inline">Cmd+Space</code>) → napiš <code class="inline">Terminal</code> → Enter. Je to appka vestavěná přímo v macOS, nic se nemusí instalovat.</p>
+
+  <h2>2. Zkopíruj a vlož tenhle příkaz</h2>
+  <p>Vlož ho do okna Terminálu (<code class="inline">Cmd+V</code>) a stiskni Enter.</p>
+
+  <div class="codebox">
+    <div class="codebox-head">
+      <span>bash</span>
+      <button class="copy-btn" onclick="copyScript(this, 'install-cmd')">Kopírovat</button>
+    </div>
+    <div class="codebox-body"><code id="install-cmd">curl -fsSL https://poliiiik.github.io/meetily-watcher-installer/install.sh | bash</code></div>
+  </div>
+
+  <div class="note">Tohle je bezpečné - stažení přes Terminál macOS nekontroluje stejně jako stažení z prohlížeče, takže se neobjeví žádná hláška o "neznámém vývojáři" ani "Open Anyway". Nic se neděje skrytě - vidíš přesně to samé, co je v <a href="install.sh">install.sh</a>.</div>
+
+  <h2>3. Co se bude dít dál (v tomto pořadí)</h2>
+  <ol>
+    <li>Terminál se jednou zeptá na <b>heslo k tomuto Macu</b> - píše se skrytě (nic se nezobrazuje, to je normální), potvrď Enterem.</li>
+    <li>Možná vyskočí systémové okno o instalaci <b>Xcode Command Line Tools</b> - odklikni.</li>
+    <li>3x se otevře prohlížeč na stránce Hugging Face - založení účtu, odsouhlasení licence modelů, vytvoření přístupového tokenu. Appka přesně napíše, co kde kliknout.</li>
+    <li>Instalace trvá <b>30-60 minut</b> (stahují se AI modely, cca 5-6 GB) - nezavírej okno Terminálu, dokud nedoběhne.</li>
+    <li>Na konci se macOS zeptá na povolení <b>Mikrofon / Nahrávání obrazovky / Přístupnost</b> - u všech potvrď.</li>
+  </ol>
+
+  <h2>Něco nejde?</h2>
+  <p>Průběh instalace se ukládá do <code class="inline">~/whisper-setup/install.log</code>. Napiš Matyášovi a pošli mu tenhle soubor. Příkaz je bezpečné spustit znovu - nic se nerozbije, jen doběhnou kroky, které se ještě nestihly.</p>
+
+  <footer>Meetily Watcher - interní nástroj Addvery.</footer>
+</div>
+
+<script>
+function copyScript(btn, elementId) {
+  var text = document.getElementById(elementId).textContent;
+  var onCopied = function () {
+    var original = 'Kopírovat';
+    btn.textContent = 'Zkopírováno ✓';
+    btn.classList.add('copied');
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1800);
+  };
+  var fallbackCopy = function () {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); onCopied(); }
+    catch (e) { btn.textContent = 'Nepodařilo se, označ a Cmd+C'; }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onCopied, fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+</script>
+</body>
+</html>

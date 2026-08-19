@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Meetily Watcher - konsolidovaný instalátor.
-# Spouští se z .app wrapperu (viz build.sh) - konzultant nikdy neotevírá Terminal sám,
-# veškerá komunikace jde přes nativní macOS dialogy (lib/gui.sh, lib/hf_onboarding.sh).
+# Spouští se z docs/install.sh (curl | bash) přímo v Terminálu - GUI dialogy
+# (lib/gui.sh, lib/hf_onboarding.sh) doplňují, ale samotný progress text teď
+# konzultant vidí live přímo v Terminálu.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,6 +12,7 @@ INSTALL_LOG="$WHISPER_SETUP_DIR/install.log"
 mkdir -p "$WHISPER_SETUP_DIR"
 exec > >(tee -a "$INSTALL_LOG") 2>&1
 echo "=== Meetily Watcher instalace: $(date) ==="
+echo "(Vidíš tady běžet text - to je normální průběh instalace, nech to běžet.)"
 
 # shellcheck source=lib/gui.sh
 source "$SCRIPT_DIR/lib/gui.sh"

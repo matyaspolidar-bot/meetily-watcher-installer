@@ -1,14 +1,23 @@
 # meetily-watcher-installer
 
 Konsolidovaný instalátor Whisper/Meetily watcher pipeline pro Addvery konzultanty.
-Interní vývojové repo - koncový uživatel dostává jen ZIP z `dist/` (viz `build.sh`).
+Koncový uživatel dostává jen jeden příkaz (`curl | bash`) z landing page
+`docs/index.html` (GitHub Pages) - žádný ZIP, žádné klikání přes Gatekeeper.
 
-## Stav: hotovo (v1.0.0)
+## Stav: hotovo (v1.1.0)
 
-Jeden ZIP, jedna appka na dvojklik. Konzultant: stáhne, spustí, proklikává jen
-nevyhnutelné kroky (HF účet/token, systémová povolení macOS). Vše ostatní
-(Homebrew, Python, AI modely, Meetily samotná appka, oba watcher démoni)
-appka nainstaluje sama.
+Jeden příkaz do Terminálu, žádné klikání přes Nastavení systému. Soubory
+stažené přes `curl`/`tar` nedostávají `com.apple.quarantine` (na rozdíl od
+stažení přes prohlížeč), takže se Gatekeeper vůbec nespustí - stejný princip
+jako Homebrew/Rustup. Nevyžaduje Apple Developer účet ani notarizaci.
+Konzultant: otevře Terminal, vloží příkaz, proklikává jen nevyhnutelné kroky
+(HF účet/token, systémová povolení macOS). Vše ostatní appka nainstaluje sama.
+
+- **v1.1.0:** distribuce přepsána z `.app`/ZIP na `docs/install.sh` (bootstrap
+  stažený přes curl) + `docs/index.html` (landing page) + GitHub Release
+  tarball (`build.sh` teď dělá `tar` + `gh release create` místo
+  `osacompile`/`codesign`/`zip`). Instalační pipeline (`src/`) je funkčně
+  identická jako v1.0.0.
 
 - **Fáze 0:** jeden `install.sh`, idempotentní stages, admin-rights preflight,
   všechny watcher skripty se kopírují atomicky (opravuje dřívější mezeru, kdy
@@ -23,36 +32,41 @@ appka nainstaluje sama.
 - **Fáze 5:** staré HTML návody archivovány s banerem do `docs/decision-log/`,
   přidán `.install-version` marker pro budoucí update-check.
 
-**Vědomě mimo v1.0.0:** podepsaný `.pkg` (čeká na Apple Developer účet),
-kalendářové automatické spouštění nahrávání bez dotazu (samostatný projekt -
-dnešní automatický dialog "Chcete začít nahrávat?" při zapnutí appky už ale
-řeší "jedno tlačítko").
+**Vědomě mimo v1.1.0:** kalendářové automatické spouštění nahrávání bez dotazu
+(samostatný projekt - dnešní automatický dialog "Chcete začít nahrávat?" při
+zapnutí appky už ale řeší "jedno tlačítko"). `.app`/AppleScript instalátor
+(`launcher-src/installer.applescript`) zůstává v repu jako nepoužívaný
+artefakt z v1.0.0, odpojený z aktivního `build.sh` pipeline.
 
-Plán: `~/.claude/plans/hele-m-l-jsem-call-elegant-whisper.md`
+Plán: `~/.claude/plans/hele-ten-error-ktery-melodic-volcano.md`
 
 ## Struktura
 
 ```
-src/install.sh              # entrypoint
+src/install.sh              # entrypoint (spouští se přímo v Terminálu)
 src/lib/stages.sh           # idempotentní instalační kroky
 src/lib/gui.sh              # osascript dialogy (vítání, úspěch/neúspěch)
 src/lib/hf_onboarding.sh    # HuggingFace účet/licence/token flow
 src/payload/                # skripty a plist šablony kopírované na cílový stroj
 src/vendor/                 # Meetily.dmg (stahuje download.sh, negituje se)
-launcher-src/                # zdroj .app wrapperu (osacompile)
+docs/install.sh              # bootstrap - stáhne + rozbalí + spustí install.sh
+docs/index.html              # landing page (GitHub Pages) s copy-paste příkazem
 docs/decision-log/          # archivované staré HTML návody
-build.sh                    # sestaví launcher/*.app a zabalí dist/*.zip
+launcher-src/                # (nepoužívané) zdroj .app wrapperu z v1.0.0
+build.sh                    # sbalí src/ do tarballu a nahraje jako GitHub Release
 ```
 
-## Sestavení
+## Sestavení a vydání nové verze
 
 ```
 bash build.sh
 ```
 
 Automaticky doskáhne `src/vendor/meetily_0.4.0_aarch64.dmg` (přes `gh` CLI,
-pokud chybí) a vytvoří `dist/meetily-watcher-installer-<verze>.zip` - to je
-soubor k distribuci konzultantům (Slack / sdílený disk).
+pokud chybí), sbalí `src/*` do `dist/meetily-watcher-payload.tar.gz` a nahraje
+ho jako asset GitHub Release (`gh release create`). Landing page odkazuje na
+stabilní `.../releases/latest/download/...` URL, která se mezi verzemi nemění -
+konzultantův příkaz se tak nikdy nemusí posílat znovu.
 
 ## Zdroj pravdy / archiv
 
