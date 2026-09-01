@@ -1,9 +1,10 @@
 # meetily-watcher-installer
 
 Konsolidovaný instalátor Whisper/Meetily watcher pipeline pro Addvery konzultanty.
-Koncový uživatel dostává jen jeden příkaz (`curl | bash`) z landing page
-`docs/index.html` (GitHub Pages), nebo pošle repo Claude Code (viz `CLAUDE.md`) -
-žádný ZIP, žádné klikání přes Gatekeeper.
+Koncový uživatel primárně pošle repo Claude Code (nebo Claude chatu) zprávou
+(viz `CLAUDE.md`) - vyžaduje to funkční Claude. Bez Claude dostane jeden
+příkaz (`curl | bash`) z landing page `docs/index.html` (GitHub Pages) jako
+záložení postup - žádný ZIP, žádné klikání přes Gatekeeper.
 
 ## Stav: hotovo (v1.1.0)
 
@@ -11,11 +12,12 @@ Jeden příkaz do Terminálu, žádné klikání přes Nastavení systému. Soub
 stažené přes `curl`/`tar` nedostávají `com.apple.quarantine` (na rozdíl od
 stažení přes prohlížeč), takže se Gatekeeper vůbec nespustí - stejný princip
 jako Homebrew/Rustup. Nevyžaduje Apple Developer účet ani notarizaci.
-Konzultant: otevře Terminal, vloží příkaz, proklikává jen nevyhnutelné kroky
-(HF účet/token, systémová povolení macOS). Vše ostatní appka nainstaluje sama.
-Alternativně: `CLAUDE.md` v rootu repa instruuje Claude Code, aby po
-naklonování/otevření repa spustil tentýž `curl | bash` příkaz sám - konzultant
-tak jen pošle Claude Code odkaz na repo.
+Primárně: konzultant pošle Claude Code (nebo Claude chatu) odkaz na repo -
+`CLAUDE.md` v rootu instruuje Claude, aby spustil tentýž `curl | bash`
+příkaz sám a instalaci hlídal. Vyžaduje to, aby konzultant už měl Claude
+nastavený. Bez Claude: otevře Terminal, vloží příkaz, proklikává jen
+nevyhnutelné kroky (HF účet/token, systémová povolení macOS). Vše ostatní
+appka nainstaluje sama.
 
 **Repo běží pod GitHub účtem `matyaspolidar-bot`** - přidání emailu
 `matyas.polidar@addvery.com` k tomuto účtu (GitHub.com → Settings → Emails →

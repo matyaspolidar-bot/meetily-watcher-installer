@@ -56,12 +56,23 @@ footer{margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--line);color
   <h1>Meetily Watcher</h1>
   <p class="sub">Automatický přepis a diarizace schůzek (Whisper + rozpoznání mluvčích) běžící na pozadí. Instalace jedním příkazem - bez ZIPu, bez klikání přes Nastavení systému.</p>
 
-  <div class="note"><b>Už používáš Claude Code?</b> Stačí mu poslat zprávu: <code class="inline">naklonuj a nainstaluj https://github.com/matyaspolidar-bot/meetily-watcher-installer</code> - repo obsahuje instrukce, které si Claude Code sám přečte a instalaci spustí za tebe. Nemáš Claude Code? Pokračuj postupem níže (Terminál).</div>
+  <h2>1. Pošli odkaz Claude (vyžadován funkční Claude)</h2>
+  <p>Máš spuštěný Claude Code nebo Claude chat? Zkopíruj zprávu níže a pošli mu ji přesně tak, jak je - repo obsahuje instrukce, které si Claude sám přečte a instalaci spustí za tebe.</p>
 
-  <h2>1. Otevři Terminál</h2>
+  <div class="codebox">
+    <div class="codebox-head">
+      <span>zpráva pro Claude</span>
+      <button class="copy-btn" onclick="copyScript(this, 'claude-msg')">Kopírovat</button>
+    </div>
+    <div class="codebox-body"><code id="claude-msg">naklonuj a nainstaluj https://github.com/matyaspolidar-bot/meetily-watcher-installer</code></div>
+  </div>
+
+  <div class="note">Claude si po přečtení repa sám spustí instalaci a bude tě průběžně informovat, co se děje a kde je potřeba tvůj vstup (heslo, HF účet, systémová povolení). Nemáš Claude? Pokračuj krokem 2 níže (Terminál).</div>
+
+  <h2>2. Nemáš Claude? Otevři Terminál</h2>
   <p>Spotlight (lupa vpravo nahoře, nebo <code class="inline">Cmd+Space</code>) → napiš <code class="inline">Terminal</code> → Enter. Je to appka vestavěná přímo v macOS, nic se nemusí instalovat.</p>
 
-  <h2>2. Zkopíruj a vlož tenhle příkaz</h2>
+  <h2>3. Zkopíruj a vlož tenhle příkaz</h2>
   <p>Vlož ho do okna Terminálu (<code class="inline">Cmd+V</code>) a stiskni Enter.</p>
 
   <div class="codebox">
@@ -74,7 +85,7 @@ footer{margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--line);color
 
   <div class="note">Tohle je bezpečné - stažení přes Terminál macOS nekontroluje stejně jako stažení z prohlížeče, takže se neobjeví žádná hláška o "neznámém vývojáři" ani "Open Anyway". Nic se neděje skrytě - vidíš přesně to samé, co je v <a href="install.sh">install.sh</a>.</div>
 
-  <h2>3. Co se bude dít dál (v tomto pořadí)</h2>
+  <h2>4. Co se bude dít dál (v tomto pořadí)</h2>
   <ol>
     <li>Terminál se jednou zeptá na <b>heslo k tomuto Macu</b> - píše se skrytě (nic se nezobrazuje, to je normální), potvrď Enterem.</li>
     <li>Možná vyskočí systémové okno o instalaci <b>Xcode Command Line Tools</b> - odklikni.</li>
