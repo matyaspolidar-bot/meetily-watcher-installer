@@ -6,7 +6,7 @@ Koncový uživatel primárně pošle repo Claude Code (nebo Claude chatu) zpráv
 příkaz (`curl | bash`) z landing page `docs/index.html` (GitHub Pages) jako
 záložení postup - žádný ZIP, žádné klikání přes Gatekeeper.
 
-## Stav: hotovo (v1.1.0)
+## Stav: hotovo (v1.1.3)
 
 Jeden příkaz do Terminálu, žádné klikání přes Nastavení systému. Soubory
 stažené přes `curl`/`tar` nedostávají `com.apple.quarantine` (na rozdíl od
@@ -24,6 +24,20 @@ appka nainstaluje sama.
 Add email, potvrdit klikem na verifikační email) je čistě účtová věc a
 nevyžaduje žádnou změnu URL ani kódu, protože všechny odkazy používají
 username, ne email.
+
+- **v1.1.1-v1.1.3:** tři bugy odhalené reálným usability testem (konzultant bez
+  zkušeností s AI, instalace spuštěná přes Path A - zprávou do Claude, ne
+  ručně v Terminálu):
+  - **v1.1.1:** `hf_onboarding.sh` volal `huggingface-cli` přes systémový
+    PATH, kde binárka není - opraveno na volání přímo z `whisperx-env`.
+  - **v1.1.2:** `stage_verify` hlásil falešnou chybu, když LaunchAgent
+    naběhl pomaleji než v ručním Terminálu (typicky když `install.sh`
+    spouští Claude Code) - přechod z `launchctl load` na
+    `launchctl bootstrap`/`kickstart -k`, čekací okno 10s → 30s.
+  - **v1.1.3:** zámek proti souběžnému spuštění `install.sh` (`mkdir`-based,
+    s detekcí zastaralého zámku podle PID). Zároveň opraven `.install-version`
+    marker - dřív natvrdo `1.0.0`, teď čte skutečnou verzi ze souboru
+    `VERSION`, který do stage přibalí `build.sh`.
 
 - **v1.1.0:** distribuce přepsána z `.app`/ZIP na `docs/install.sh` (bootstrap
   stažený přes curl) + `docs/index.html` (landing page) + GitHub Release

@@ -62,7 +62,7 @@ stage_write_plist
 stage_write_launch_prompt_plist
 
 if stage_verify; then
-    echo "1.0.0" > "$WHISPER_SETUP_DIR/.install-version"
+    cat "$SCRIPT_DIR/VERSION" 2>/dev/null > "$WHISPER_SETUP_DIR/.install-version" || echo "unknown" > "$WHISPER_SETUP_DIR/.install-version"
     success_dialog "Hotovo! Meetily Watcher je nainstalovaný a běží na pozadí."
     osascript -e 'display dialog "Poslední krok, nedá se odklikat automaticky - macOS se tě sám postupně zeptá na pár povolení:
 

@@ -20,6 +20,7 @@ echo "-> Kopíruji instalátor do stage..."
 cp -R src/* "$STAGING/"
 find "$STAGING" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 find "$STAGING" -name "*.pyc" -delete
+echo "$VERSION" > "$STAGING/VERSION"
 
 echo "-> Balím tarball (jméno souboru bez verze - 'latest' URL se nikdy nemění)..."
 tar -czf "$OUT" -C dist meetily-watcher
