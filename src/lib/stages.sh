@@ -143,8 +143,9 @@ stage_write_plist() {
     payload_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../payload" && pwd)"
     sed "s|__HOME__|$HOME|g" "$payload_dir/com.addvery.meetily-watcher.plist.template" > "$PLIST_TARGET" \
         || fail_dialog "Zápis plistu selhal."
-    launchctl unload "$PLIST_TARGET" &>/dev/null || true
-    launchctl load "$PLIST_TARGET" || fail_dialog "Načtení launchd úlohy selhalo."
+    launchctl bootout "gui/$(id -u)" "$PLIST_TARGET" &>/dev/null || true
+    launchctl bootstrap "gui/$(id -u)" "$PLIST_TARGET" || fail_dialog "Načtení launchd úlohy selhalo."
+    launchctl kickstart -k "gui/$(id -u)/com.addvery.meetily-watcher" || fail_dialog "Spuštění launchd úlohy selhalo."
     info "launchd watcher: nainstalováno a spuštěno"
 }
 
@@ -153,8 +154,9 @@ stage_write_launch_prompt_plist() {
     payload_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../payload" && pwd)"
     sed "s|__HOME__|$HOME|g" "$payload_dir/com.addvery.meetily-launch-prompt.plist.template" > "$PROMPT_PLIST_TARGET" \
         || fail_dialog "Zápis plistu pro dialog při zapnutí Meetily selhal."
-    launchctl unload "$PROMPT_PLIST_TARGET" &>/dev/null || true
-    launchctl load "$PROMPT_PLIST_TARGET" || fail_dialog "Načtení launchd úlohy pro dialog při zapnutí selhalo."
+    launchctl bootout "gui/$(id -u)" "$PROMPT_PLIST_TARGET" &>/dev/null || true
+    launchctl bootstrap "gui/$(id -u)" "$PROMPT_PLIST_TARGET" || fail_dialog "Načtení launchd úlohy pro dialog při zapnutí selhalo."
+    launchctl kickstart -k "gui/$(id -u)/com.addvery.meetily-launch-prompt" || fail_dialog "Spuštění launchd úlohy pro dialog při zapnutí selhalo."
     info "Dialog 'Chcete začít nahrávat?': nainstalováno a spuštěno"
     warn "Potřebuje jednorázově povolit Přístupnost (Accessibility) pro System Events/osascript v Nastavení > Soukromí a zabezpečení."
 }
@@ -164,8 +166,11 @@ wait_for_process() {
     # (appka na dvojklik), je ve zvláštním bootstrap kontextu, kde launchctl list
     # nemusí vidět GUI LaunchAgenty, i když reálně běží. pgrep hledá napříč celým
     # systémem a na tom kontextu nezávisí.
+    # 30s místo 10s - když install.sh spouští Claude Code (curl|bash přes Bash
+    # tool), naběhnutí LaunchAgentu s LimitLoadToSessionType=Aqua trvá déle než
+    # v ručním Terminálu, 10s okno hlásilo falešnou chybu i když proces běžel.
     local pattern="$1"
-    for _ in 1 2 3 4 5 6 7 8 9 10; do
+    for _ in $(seq 1 30); do
         pgrep -f "$pattern" &>/dev/null && return 0
         sleep 1
     done
