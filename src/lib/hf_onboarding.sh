@@ -64,7 +64,7 @@ Token si NIKAM neukládej ani nikomu neposílej - hned po zkopírování klikni 
         fail_dialog "Token nevypadá platně - měl by začínat 'hf_' a nic víc. Zkontroluj, že jsi zkopíroval/a celý token (huggingface.co/settings/tokens), a spusť appku znovu."
     fi
 
-    huggingface-cli login --token "$token" || fail_dialog "Přihlášení k Hugging Face selhalo - zkontroluj internetové připojení a spusť appku znovu."
+    "$WHISPERX_VENV/bin/huggingface-cli" login --token "$token" || fail_dialog "Přihlášení k Hugging Face selhalo - zkontroluj internetové připojení a spusť appku znovu."
     info "HuggingFace token: nastaveno"
 }
 
