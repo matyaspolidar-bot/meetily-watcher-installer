@@ -6,7 +6,7 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-VERSION="1.1.0"
+VERSION="1.1.1"
 STAGING="dist/meetily-watcher"
 OUT="dist/meetily-watcher-payload.tar.gz"
 
