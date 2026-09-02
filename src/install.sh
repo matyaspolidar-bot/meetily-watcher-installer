@@ -14,6 +14,23 @@ exec > >(tee -a "$INSTALL_LOG") 2>&1
 echo "=== Meetily Watcher instalace: $(date) ==="
 echo "(Vidíš tady běžet text - to je normální průběh instalace, nech to běžet.)"
 
+# Zámek proti souběžnému spuštění (mkdir je atomický i na síťových FS).
+# Zabraňuje dvěma instalacím najednou, které by si mohly šlápnout na
+# vytváření venvs / mountění DMG.
+LOCK_DIR="$WHISPER_SETUP_DIR/.install.lock"
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    other_pid="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+    if [ -n "$other_pid" ] && kill -0 "$other_pid" 2>/dev/null; then
+        echo "Instalace už běží v jiném okně (PID $other_pid) - počkej, až doběhne, a zkus to pak znovu."
+        exit 1
+    fi
+    echo "Nalezen zámek po předchozím nedokončeném běhu (proces už neběží) - přebírám ho."
+    rm -rf "$LOCK_DIR"
+    mkdir "$LOCK_DIR"
+fi
+echo $$ > "$LOCK_DIR/pid"
+trap 'rm -rf "$LOCK_DIR"' EXIT
+
 # shellcheck source=lib/gui.sh
 source "$SCRIPT_DIR/lib/gui.sh"
 # shellcheck source=lib/stages.sh
